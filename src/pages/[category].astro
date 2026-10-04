@@ -84,6 +84,7 @@ function brandLinks(ids: string[]) {
 
   {config.businessType === null ? (
     <div class="ports-note">
+      <p class="empty-heading">No verified listings yet — companies are added as verified data becomes available</p>
       <p class="lede">
         Port information lives on the <a href={MARKET_SITE_URL + "/ports/"}>Market site</a>,
         which covers Chinese origin ports and destination ports/border crossings for
@@ -95,7 +96,7 @@ function brandLinks(ids: string[]) {
     </div>
   ) : records.length === 0 ? (
     <div class="empty-state">
-      <p class="empty-heading">No verified records yet</p>
+      <p class="empty-heading">No verified listings yet — companies are added as verified data becomes available</p>
       <p class="lede">{config.emptyDescription}</p>
       <p>
         <a href="/">Back to the Companies home</a>
