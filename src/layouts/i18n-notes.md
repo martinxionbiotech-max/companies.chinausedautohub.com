@@ -27,9 +27,9 @@ interface Props {
 输出示例（英文页）：
 
 ```html
-<link rel="alternate" hreflang="en" href="https://companies.chinausedautohub.com/automakers/" />
-<link rel="alternate" hreflang="zh" href="https://companies.chinausedautohub.com/zh/automakers/" />
-<link rel="alternate" hreflang="x-default" href="https://companies.chinausedautohub.com/automakers/" />
+<link rel="alternate" hreflang="en" href="https://company.chinausedautohub.com/automakers/" />
+<link rel="alternate" hreflang="zh" href="https://company.chinausedautohub.com/zh/automakers/" />
+<link rel="alternate" hreflang="x-default" href="https://company.chinausedautohub.com/automakers/" />
 ```
 
 ### 3. metadata 可本地化

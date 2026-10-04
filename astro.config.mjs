@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-const site = process.env.COMPANIES_SITE_URL || 'https://companies.chinausedautohub.com';
+const site = process.env.COMPANIES_SITE_URL || 'https://company.chinausedautohub.com';
 export default defineConfig({
   site,
   integrations: [sitemap()],
