@@ -11,10 +11,14 @@ import {
   VERIFICATION_LABELS,
   VERIFICATION_DESCRIPTIONS,
   VERIFICATION_ORDER,
+  isDemo,
 } from "../lib/companies";
 
 const siteTitle = "China Used Car Companies";
-const companies = companiesData.companies;
+const allCompanies = companiesData.companies;
+// Public directory excludes demo/unverified records (retained in dataset only).
+const companies = allCompanies.filter((c) => !isDemo(c));
+const hiddenDemoCount = allCompanies.length - companies.length;
 const brandNames = Object.fromEntries(brandsData.brands.map((b) => [b.brand_id, b.name]));
 const countryNames = Object.fromEntries(countriesData.countries.map((c) => [c.country_id, c.name]));
 const pageUrl = COMPANIES_SITE_URL + "/";
@@ -74,7 +78,7 @@ const jsonLd = {
     evidenced; no "trusted" or "certified" claims.
   </p>
 
-  <DemoBanner text="Demo records are shown as “Unverified”. Automaker records are source-backed or publicly listed." />
+  <DemoBanner text="Demo records are retained for development only and are not shown in the public directory." />
 
   <div class="stats">
     <div class="stat"><strong>{automakerCount}</strong><span>Automakers</span></div>

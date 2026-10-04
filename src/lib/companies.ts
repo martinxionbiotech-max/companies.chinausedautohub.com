@@ -55,6 +55,13 @@ export function verificationLabel(status: string): string {
   return VERIFICATION_LABELS[status] ?? status;
 }
 
+// Demo / unverified records are retained in the dataset for development but
+// must not appear in the public directory. Use this predicate to filter them
+// out of every public list and search surface.
+export function isDemo(company: { verification_status: string }): boolean {
+  return company.verification_status === "unverified";
+}
+
 export function verificationBadgeClass(status: string): string {
   return VERIFICATION_BADGE_CLASS[status] ?? "v-unverified";
 }

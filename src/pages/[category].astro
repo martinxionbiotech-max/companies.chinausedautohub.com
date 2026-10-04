@@ -43,11 +43,10 @@ const breadcrumbLd = {
   })),
 };
 
-// List categories: filter by business type.
+// List categories: filter by business type, excluding demo/unverified records.
 const records = config.businessType
-  ? companies.filter((c) => c.business_type === config.businessType)
+  ? companies.filter((c) => c.business_type === config.businessType && !isDemo(c))
   : [];
-const onlyDemo = records.length > 0 && records.every(isDemo);
 
 const collectionLd = config.businessType
   ? {
@@ -104,7 +103,6 @@ function brandLinks(ids: string[]) {
     </div>
   ) : (
     <>
-      {onlyDemo && config.demoBanner && <DemoBanner text={config.demoBanner} />}
       <p class="lede">{records.length} {records.length === 1 ? "record" : "records"}.</p>
       <div class="company-list">
         {records.map((c) => (
