@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../../shared/components/BaseLayout.astro";
+import { COMPANIES_SITE_URL, DATA_SITE_URL, MARKET_SITE_URL, MAIN_SITE_URL } from "../../../shared/config/config";
+import companiesData from "../../../shared/data/companies.json";
+import brandsData from "../../../shared/data/brands.json";
+import countriesData from "../../../shared/data/countries.json";
+import VerificationBadge from "../../components/VerificationBadge.astro";
+import DemoBanner from "../../components/DemoBanner.astro";
+import { businessTypeLabel, vehicleTypeLabel } from "../../lib/companies";
+
+export function getStaticPaths() {
+  return companiesData.companies.map((company) => ({
+    params: { company: company.company_id },
+    props: { company },
+  }));
+}
+
+const { company } = Astro.props;
+const siteTitle = "China Used Car Companies";
+const brandNames = Object.fromEntries(brandsData.brands.map((b) => [b.brand_id, b.name]));
+const countryNames = Object.fromEntries(countriesData.countries.map((c) => [c.country_id, c.name]));
+
+const canonicalPath = `/companies/${company.company_id}/`;
+const canonicalUrl = COMPANIES_SITE_URL + canonicalPath;
+const location = `${company.city}, ${company.province}, China`;
+const vehicleTypes = (company.vehicle_types || []).map(vehicleTypeLabel).join(", ") || "Not available";
+const markets = (company.export_markets || []).map((id) => countryNames[id] || id);
+const brands = (company.main_brands || []).map((id) => brandNames[id] || id);
+
+const breadcrumbs = [
+  { name: "Companies", url: COMPANIES_SITE_URL + "/" },
+  { name: company.name, url: canonicalUrl },
+];
+
+const org = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: company.name,
+  url: canonicalUrl,
+  description: company.business_scope || undefined,
+  areaServed: markets.length ? markets : undefined,
+};
+
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbs.map((b, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: b.name,
+    item: b.url,
+  })),
+};
+
+const jsonLd = [org, breadcrumbLd];
+
+function display(value: string | null | undefined): string {
+  return value && value.trim() !== "" ? value : "Not available";
+}
+---
+
+<BaseLayout
+  siteTitle={siteTitle}
+  siteUrl={COMPANIES_SITE_URL}
+  currentSection="companies"
+  title={`${company.name} — Company Profile`}
+  description={`${company.name} (${businessTypeLabel(company.business_type)}) based in ${location}. Export markets: ${markets.join(", ") || "n/a"}. Brands: ${brands.join(", ") || "n/a"}.`}
+  canonical={canonicalPath}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+  lastUpdated={company.last_checked}
+>
+  <DemoBanner />
+
+  <h1>{company.name}</h1>
+  <p class="status-line"><VerificationBadge status={company.verification_status} /> <span class="evidence">{display(company.verification_evidence)}</span></p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Field</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Business Type</th><td>{businessTypeLabel(company.business_type)}</td></tr>
+      <tr><th scope="row">Location</th><td>{location}</td></tr>
+      <tr><th scope="row">Province</th><td>{display(company.province)}</td></tr>
+      <tr><th scope="row">City</th><td>{display(company.city)}</td></tr>
+      <tr><th scope="row">Business Scope</th><td>{display(company.business_scope)}</td></tr>
+      <tr>
+        <th scope="row">Export Markets</th>
+        <td>
+          {company.export_markets && company.export_markets.length ? (
+            <ul class="tag-list">
+              {company.export_markets.map((id) => (
+                <li><a href={MARKET_SITE_URL + "/countries/" + id + "/"}>{countryNames[id] || id}</a></li>
+              ))}
+            </ul>
+          ) : "Not available"}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Main Brands</th>
+        <td>
+          {company.main_brands && company.main_brands.length ? (
+            <ul class="tag-list">
+              {company.main_brands.map((id) => (
+                <li><a href={DATA_SITE_URL + "/brands/" + id + "/"}>{brandNames[id] || id}</a></li>
+              ))}
+            </ul>
+          ) : "Not available"}
+        </td>
+      </tr>
+      <tr><th scope="row">Vehicle Types</th><td>{vehicleTypes}</td></tr>
+      <tr><th scope="row">Inspection Capability</th><td>{display(company.inspection_capability)}</td></tr>
+      <tr><th scope="row">Warehouse</th><td>{display(company.warehouse)}</td></tr>
+      <tr><th scope="row">Website</th><td>{company.website ? <a href={company.website} rel="noopener">{company.website}</a> : "Not available"}</td></tr>
+      <tr><th scope="row">Email</th><td>{company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : "Not available"}</td></tr>
+      <tr><th scope="row">Phone</th><td>{display(company.phone)}</td></tr>
+      <tr><th scope="row">WhatsApp</th><td>{display(company.whatsapp)}</td></tr>
+      <tr><th scope="row">Verification Status</th><td><VerificationBadge status={company.verification_status} /></td></tr>
+      <tr><th scope="row">Last Updated</th><td>{display(company.last_checked)}</td></tr>
+    </tbody>
+  </table>
+
+  <p class="source-note">
+    Source: {display(company.source)}
+    {company.source_url && <> · <a href={company.source_url} rel="noopener">{company.source_url}</a></>}
+    {company.last_checked && <> · Last checked: {company.last_checked}</>}
+  </p>
+
+  <div class="cta">
+    <h2>Ready to buy?</h2>
+    <p>
+      This profile lists directory information only. For available vehicles and to send an
+      inquiry, go to the <a href={MAIN_SITE_URL}>main site</a>.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .status-line { margin: 0 0 var(--space-4); display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .evidence { color: var(--color-text-soft); font-size: 13px; }
+  .tag-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .tag-list li { margin: 0; }
+  .tag-list a { display: inline-block; padding: 2px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; background: var(--color-bg-alt); }
+  .source-note { font-size: 13px; color: var(--color-text-soft); margin: var(--space-3) 0; }
+  .cta { margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-alt); border-radius: var(--radius-lg); }
+</style>

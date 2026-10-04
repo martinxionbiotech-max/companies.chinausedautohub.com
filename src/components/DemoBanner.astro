@@ -1,0 +1,18 @@
+---
+interface Props {
+  text?: string;
+}
+const { text = "Demo record — replace with verified data." } = Astro.props;
+---
+<aside class="demo-banner">{text}</aside>
+<style>
+  .demo-banner {
+    background: #fdf3dc;
+    border: 1px solid #f0d48a;
+    color: var(--color-warning);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    margin: var(--space-4) 0;
+  }
+</style>
