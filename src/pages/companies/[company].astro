@@ -7,6 +7,7 @@ import countriesData from "../../../shared/data/countries.json";
 import VerificationBadge from "../../components/VerificationBadge.astro";
 import DemoBanner from "../../components/DemoBanner.astro";
 import { businessTypeLabel, vehicleTypeLabel } from "../../lib/companies";
+import { modelsForBrands, evRelevance, deriveOwnership } from "../../lib/intelligence";
 
 export function getStaticPaths() {
   return companiesData.companies.map((company) => ({
@@ -26,6 +27,12 @@ const location = `${company.city}, ${company.province}, China`;
 const vehicleTypes = (company.vehicle_types || []).map(vehicleTypeLabel).join(", ") || "Not available";
 const markets = (company.export_markets || []).map((id) => countryNames[id] || id);
 const brands = (company.main_brands || []).map((id) => brandNames[id] || id);
+
+// P3.6 relationship zone: only for automakers (evidence-backed fields only).
+const isAutomaker = company.business_type === "automaker";
+const relevantModels = isAutomaker ? modelsForBrands(company.main_brands || []) : [];
+const evNote = isAutomaker ? evRelevance(company.main_brands || []) : null;
+const ownership = deriveOwnership(company.verification_status, company.business_scope);
 
 const breadcrumbs = [
   { name: "Companies", url: COMPANIES_SITE_URL + "/" },
@@ -128,6 +135,81 @@ function display(value: string | null | undefined): string {
     {company.last_checked && <> · Last checked: {company.last_checked}</>}
   </p>
 
+  {isAutomaker && (
+    <section class="intel">
+      <h2>Company Intelligence</h2>
+      <p class="intel-note">
+        Relationship view: Company → Brand → Manufacturing → Vehicle → Export → Market.
+        Only evidence-backed fields are shown; absent facts are marked "Not available".
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Field</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Headquarters</th><td>{location}</td></tr>
+          <tr><th scope="row">Ownership</th><td>{ownership}</td></tr>
+          <tr><th scope="row">Manufacturing footprint</th><td>Not available</td></tr>
+          <tr>
+            <th scope="row">Vehicle brands</th>
+            <td>
+              {brands.length ? (
+                <ul class="tag-list">
+                  {company.main_brands.map((id) => (
+                    <li><a href={DATA_SITE_URL + "/brands/" + id + "/"}>{brandNames[id] || id}</a></li>
+                  ))}
+                </ul>
+              ) : "Not available"}
+            </td>
+          </tr>
+          <tr><th scope="row">Major vehicle categories</th><td>{vehicleTypes}</td></tr>
+          <tr>
+            <th scope="row">Relevant models</th>
+            <td>
+              {relevantModels.length ? (
+                <ul class="tag-list">
+                  {relevantModels.map((m) => (
+                    <li>
+                      <a href={DATA_SITE_URL + "/models/" + m.model_id + "/"}>{m.name}</a>
+                      <span class="zh">{m.name_zh}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : "Not available"}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Export information</th>
+            <td>
+              {markets.length ? (
+                <ul class="tag-list">
+                  {company.export_markets.map((id) => (
+                    <li><a href={MARKET_SITE_URL + "/countries/" + id + "/"}>{countryNames[id] || id}</a></li>
+                  ))}
+                </ul>
+              ) : "Not available"}
+            </td>
+          </tr>
+          <tr><th scope="row">Market presence</th><td>{markets.length ? markets.join(", ") : "Not available"}</td></tr>
+          <tr><th scope="row">Used vehicle relevance</th><td>{relevantModels.length ? `${company.name} models are listed in the used-vehicle database, linking to the relevant model pages.` : "Not available"}</td></tr>
+          <tr><th scope="row">EV relevance</th><td>{evNote ?? "Not available"}</td></tr>
+          <tr>
+            <th scope="row">Official sources</th>
+            <td>
+              {company.website ? (
+                <a href={company.website} rel="noopener">{company.website}</a>
+              ) : "Not available"}
+              {company.source_url && company.source_url !== company.website && (
+                <> · <a href={company.source_url} rel="noopener">{company.source_url}</a></>
+              )}
+            </td>
+          </tr>
+          <tr><th scope="row">Verification status</th><td><VerificationBadge status={company.verification_status} /></td></tr>
+        </tbody>
+      </table>
+    </section>
+  )}
+
   <div class="cta">
     <h2>Ready to buy?</h2>
     <p>
@@ -145,4 +227,8 @@ function display(value: string | null | undefined): string {
   .tag-list a { display: inline-block; padding: 2px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; background: var(--color-bg-alt); }
   .source-note { font-size: 13px; color: var(--color-text-soft); margin: var(--space-3) 0; }
   .cta { margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-alt); border-radius: var(--radius-lg); }
+  .intel { margin-top: var(--space-6); }
+  .intel h2 { border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-2); }
+  .intel-note { font-size: 13px; color: var(--color-text-soft); }
+  .zh { color: var(--color-text-soft); font-size: 0.9em; margin-left: var(--space-2); }
 </style>
