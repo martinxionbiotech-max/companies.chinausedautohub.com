@@ -1,0 +1,149 @@
+---
+import BaseLayout from "../../shared/components/BaseLayout.astro";
+import {
+  COMPANIES_SITE_URL,
+  DATA_SITE_URL,
+  MARKET_SITE_URL,
+} from "../../shared/config/config";
+import brandsData from "../../shared/data/brands.json";
+import VerificationBadge from "../components/VerificationBadge.astro";
+import DemoBanner from "../components/DemoBanner.astro";
+import { businessTypeLabel } from "../lib/companies";
+import { CATEGORIES, companies, getCategory, isDemo } from "../lib/categories";
+
+export function getStaticPaths() {
+  return CATEGORIES.map((c) => ({ params: { category: c.slug } }));
+}
+
+const { category } = Astro.params;
+const config = getCategory(category);
+
+const siteTitle = "China Used Car Companies";
+const brandNames = Object.fromEntries(brandsData.brands.map((b) => [b.brand_id, b.name]));
+
+// Fall back to the 404 for unknown category slugs (getStaticPaths only lists the 8).
+if (!config) {
+  return Astro.redirect("/404/", 404);
+}
+
+const pageUrl = COMPANIES_SITE_URL + "/" + config.slug + "/";
+const breadcrumbs = [
+  { name: "Companies", url: COMPANIES_SITE_URL + "/" },
+  { name: config.h1, url: pageUrl },
+];
+
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbs.map((b, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: b.name,
+    item: b.url,
+  })),
+};
+
+// List categories: filter by business type.
+const records = config.businessType
+  ? companies.filter((c) => c.business_type === config.businessType)
+  : [];
+const onlyDemo = records.length > 0 && records.every(isDemo);
+
+const collectionLd = config.businessType
+  ? {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: config.h1,
+      url: pageUrl,
+      hasPart: records.map((c) => ({
+        "@type": "Organization",
+        name: c.name,
+        url: COMPANIES_SITE_URL + "/companies/" + c.company_id + "/",
+      })),
+    }
+  : null;
+
+const jsonLd = collectionLd ? [collectionLd, breadcrumbLd] : [breadcrumbLd];
+
+function brandLinks(ids: string[]) {
+  return ids.filter((id) => brandNames[id]);
+}
+---
+
+<BaseLayout
+  siteTitle={siteTitle}
+  siteUrl={COMPANIES_SITE_URL}
+  currentSection="companies"
+  title={config.title}
+  description={config.description}
+  canonical={"/" + config.slug + "/"}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+>
+  <h1>{config.h1}</h1>
+
+  {config.businessType === null ? (
+    <div class="ports-note">
+      <p class="lede">
+        Port information lives on the <a href={MARKET_SITE_URL + "/ports/"}>Market site</a>,
+        which covers Chinese origin ports and destination ports/border crossings for
+        used-car export.
+      </p>
+      <p>
+        <a href={MARKET_SITE_URL + "/ports/"}>Browse ports on the Market site →</a>
+      </p>
+    </div>
+  ) : records.length === 0 ? (
+    <div class="empty-state">
+      <p class="empty-heading">No verified records yet</p>
+      <p class="lede">{config.emptyDescription}</p>
+      <p>
+        <a href="/">Back to the Companies home</a>
+      </p>
+    </div>
+  ) : (
+    <>
+      {onlyDemo && config.demoBanner && <DemoBanner text={config.demoBanner} />}
+      <p class="lede">{records.length} {records.length === 1 ? "record" : "records"}.</p>
+      <div class="company-list">
+        {records.map((c) => (
+          <article class="company-card">
+            <h2><a href={`/companies/${c.company_id}/`}>{c.name}</a></h2>
+            <p class="meta">
+              {businessTypeLabel(c.business_type)} · {c.city}, {c.province}, China
+              {c.established ? <> · Est. {c.established}</> : null}
+            </p>
+            {c.website && (
+              <p class="website">
+                <a href={c.website} rel="noopener noreferrer">{c.website}</a>
+              </p>
+            )}
+            {brandLinks(c.main_brands || []).length > 0 && (
+              <p class="brands">
+                Brands:{" "}
+                {brandLinks(c.main_brands || []).map((id, i) => (
+                  <><a href={DATA_SITE_URL + "/brands/" + id + "/"}>{brandNames[id]}</a>{i < brandLinks(c.main_brands || []).length - 1 ? ", " : ""}</>
+                ))}
+              </p>
+            )}
+            <VerificationBadge status={c.verification_status} />
+          </article>
+        ))}
+      </div>
+    </>
+  )}
+</BaseLayout>
+
+<style>
+  .lede { font-size: 17px; color: var(--color-text-soft); }
+  .company-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4); margin: var(--space-4) 0; }
+  .company-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); background: var(--color-bg); box-shadow: var(--shadow-sm); }
+  .company-card h2 { font-size: 18px; margin: 0 0 var(--space-2); }
+  .company-card .meta { color: var(--color-text-soft); font-size: 14px; margin: 0 0 var(--space-2); }
+  .company-card .website { font-size: 13px; margin: 0 0 var(--space-2); word-break: break-all; }
+  .company-card .brands { font-size: 13px; color: var(--color-text-soft); margin: 0 0 var(--space-3); }
+  .empty-state { padding: var(--space-6) 0; max-width: 60ch; }
+  .empty-heading { font-size: 20px; font-weight: 700; color: var(--color-primary); }
+  .empty-state .lede, .ports-note .lede { color: var(--color-text-soft); font-size: 17px; }
+  .ports-note { padding: var(--space-5) 0; max-width: 60ch; }
+</style>

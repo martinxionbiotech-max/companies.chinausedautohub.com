@@ -6,18 +6,40 @@ import brandsData from "../../shared/data/brands.json";
 import countriesData from "../../shared/data/countries.json";
 import VerificationBadge from "../components/VerificationBadge.astro";
 import DemoBanner from "../components/DemoBanner.astro";
-import { businessTypeLabel } from "../lib/companies";
+import {
+  businessTypeLabel,
+  VERIFICATION_LABELS,
+  VERIFICATION_DESCRIPTIONS,
+  VERIFICATION_ORDER,
+} from "../lib/companies";
 
 const siteTitle = "China Used Car Companies";
 const companies = companiesData.companies;
 const brandNames = Object.fromEntries(brandsData.brands.map((b) => [b.brand_id, b.name]));
 const countryNames = Object.fromEntries(countriesData.countries.map((c) => [c.country_id, c.name]));
 const pageUrl = COMPANIES_SITE_URL + "/";
+const LAST_CHECKED = "2026-10-04";
+
+const automakerCount = companies.filter((c) => c.business_type === "automaker").length;
+const exporterCount = companies.filter((c) => c.business_type === "exporter").length;
+
+const categories = [
+  { slug: "automakers", label: "Automakers" },
+  { slug: "used-car-exporters", label: "Used Car Exporters" },
+  { slug: "dealers", label: "Dealers" },
+  { slug: "inspection-companies", label: "Inspection Companies" },
+  { slug: "logistics-companies", label: "Logistics Companies" },
+  { slug: "shipping-companies", label: "Shipping Companies" },
+  { slug: "suppliers", label: "Suppliers" },
+  { slug: "ports", label: "Ports" },
+];
 
 function searchText(c: (typeof companies)[number]): string {
   const b = (c.main_brands || []).map((id) => brandNames[id] || id);
   const m = (c.export_markets || []).map((id) => countryNames[id] || id);
-  return [c.name, c.city, c.province, c.business_type, ...b, ...m].join(" ").toLowerCase();
+  return [c.name, c.city, c.province, c.business_type, c.verification_status, ...b, ...m]
+    .join(" ")
+    .toLowerCase();
 }
 
 const jsonLd = {
@@ -41,28 +63,41 @@ const jsonLd = {
   siteUrl={COMPANIES_SITE_URL}
   currentSection="companies"
   title="China Used Car Exporters & Suppliers"
-  description="Directory of Chinese used car exporters, dealers, suppliers and inspection agencies — with verification status, export markets and brands handled."
+  description="Directory of Chinese automakers, used car exporters, dealers, suppliers and inspection agencies — with verification status, export markets and brands handled."
   canonical="/"
   jsonLd={jsonLd}
 >
   <h1>China Used Car Exporters &amp; Suppliers</h1>
   <p class="lede">
-    Company and supplier intelligence for China's used car export market — exporters,
+    Company intelligence for China's used car export market — automakers, exporters,
     dealers, suppliers and inspection agencies. Verification status shows only what is
     evidenced; no "trusted" or "certified" claims.
   </p>
 
-  <DemoBanner text="Demo data — these company records are Phase 1 placeholders. Replace with verified data." />
+  <DemoBanner text="Demo records are shown as “Unverified”. Automaker records are source-backed or publicly listed." />
+
+  <div class="stats">
+    <div class="stat"><strong>{automakerCount}</strong><span>Automakers</span></div>
+    <div class="stat"><strong>{exporterCount}</strong><span>Exporters</span></div>
+    <div class="stat"><strong>{LAST_CHECKED}</strong><span>Last checked</span></div>
+  </div>
 
   <div class="toolbar">
     <input type="search" id="search" placeholder="Search company, city, brand or market" aria-label="Search companies" />
     <select id="type-filter" aria-label="Filter by business type">
       <option value="">All types</option>
+      <option value="automaker">Automaker</option>
       <option value="exporter">Exporter</option>
       <option value="dealer">Dealer</option>
       <option value="supplier">Supplier</option>
       <option value="inspection">Inspection agency</option>
       <option value="other">Other</option>
+    </select>
+    <select id="verification-filter" aria-label="Filter by verification level">
+      <option value="">All verification levels</option>
+      {VERIFICATION_ORDER.map((v) => (
+        <option value={v}>{VERIFICATION_LABELS[v]}</option>
+      ))}
     </select>
   </div>
 
@@ -70,7 +105,7 @@ const jsonLd = {
 
   <div class="company-list">
     {companies.map((c) => (
-      <article class="company-card" data-type={c.business_type} data-search={searchText(c)}>
+      <article class="company-card" data-type={c.business_type} data-verification={c.verification_status} data-search={searchText(c)}>
         <h2><a href={`/companies/${c.company_id}/`}>{c.name}</a></h2>
         <p class="meta">
           {businessTypeLabel(c.business_type)} · {c.city}, {c.province}, China
@@ -84,6 +119,27 @@ const jsonLd = {
   </div>
   <p id="no-results" class="no-results" hidden>No companies match your search.</p>
 
+  <aside class="legend">
+    <h2>Verification levels</h2>
+    <ul>
+      {VERIFICATION_ORDER.map((v) => (
+        <li>
+          <VerificationBadge status={v} />
+          <span>{VERIFICATION_DESCRIPTIONS[v]}</span>
+        </li>
+      ))}
+    </ul>
+  </aside>
+
+  <div class="browse">
+    <h2>Browse by category</h2>
+    <ul>
+      {categories.map((cat) => (
+        <li><a href={`/${cat.slug}/`}>{cat.label}</a></li>
+      ))}
+    </ul>
+  </div>
+
   <div class="cta">
     <h2>Looking for a vehicle, not a company?</h2>
     <p>
@@ -95,6 +151,10 @@ const jsonLd = {
 
 <style>
   .lede { font-size: 18px; color: var(--color-text-soft); }
+  .stats { display: flex; gap: var(--space-4); margin: var(--space-5) 0; flex-wrap: wrap; }
+  .stat { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-4); min-width: 140px; text-align: center; }
+  .stat strong { display: block; font-size: 26px; color: var(--color-primary); }
+  .stat span { color: var(--color-text-soft); font-size: 14px; }
   .toolbar { display: flex; gap: var(--space-3); margin: var(--space-5) 0 var(--space-3); flex-wrap: wrap; }
   .toolbar input, .toolbar select {
     font: inherit; padding: var(--space-2) var(--space-3);
@@ -108,12 +168,20 @@ const jsonLd = {
   .company-card .meta { color: var(--color-text-soft); font-size: 14px; margin: 0 0 var(--space-2); }
   .company-card .markets { color: var(--color-text-soft); font-size: 13px; margin: 0 0 var(--space-3); }
   .no-results { color: var(--color-text-soft); padding: var(--space-4); text-align: center; }
+  .legend { margin: var(--space-6) 0; padding: var(--space-4); background: var(--color-bg-alt); border-radius: var(--radius-lg); }
+  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+  .legend li { display: flex; gap: var(--space-3); align-items: flex-start; font-size: 14px; color: var(--color-text-soft); }
+  .legend li .badge { flex-shrink: 0; }
+  .browse { margin: var(--space-6) 0; }
+  .browse ul { list-style: none; padding: 0; display: flex; gap: var(--space-4); flex-wrap: wrap; margin: 0; }
+  .browse li { margin: 0; }
   .cta { margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-alt); border-radius: var(--radius-lg); }
 </style>
 
 <script>
   const search = document.getElementById("search");
   const typeFilter = document.getElementById("type-filter");
+  const verificationFilter = document.getElementById("verification-filter");
   const resultCount = document.getElementById("result-count");
   const noResults = document.getElementById("no-results");
   const cards = Array.from(document.querySelectorAll(".company-card"));
@@ -121,11 +189,13 @@ const jsonLd = {
   function applyFilters() {
     const q = search.value.trim().toLowerCase();
     const t = typeFilter.value;
+    const v = verificationFilter.value;
     let visible = 0;
     cards.forEach((card) => {
       const matchSearch = !q || card.dataset.search.includes(q);
       const matchType = !t || card.dataset.type === t;
-      const show = matchSearch && matchType;
+      const matchVerification = !v || card.dataset.verification === v;
+      const show = matchSearch && matchType && matchVerification;
       card.hidden = !show;
       if (show) visible += 1;
     });
@@ -135,4 +205,5 @@ const jsonLd = {
 
   search.addEventListener("input", applyFilters);
   typeFilter.addEventListener("change", applyFilters);
+  verificationFilter.addEventListener("change", applyFilters);
 </script>

@@ -1,26 +1,43 @@
 export const BUSINESS_TYPE_LABELS: Record<string, string> = {
+  automaker: "Automaker",
   exporter: "Exporter",
   dealer: "Dealer",
   supplier: "Supplier",
   inspection: "Inspection agency",
+  logistics: "Logistics company",
+  shipping: "Shipping company",
   other: "Other",
 };
 
+// Phase 2 verification tiers (four levels, replacing the previous five words).
 export const VERIFICATION_LABELS: Record<string, string> = {
-  listed: "Listed",
-  information_provided: "Information provided",
-  source_verified: "Source verified",
-  official_website_found: "Official website found",
-  registration_information_available: "Registration info available",
+  verified: "Verified",
+  publicly_listed: "Publicly listed",
+  "source-backed": "Source-backed",
+  unverified: "Unverified",
 };
 
 export const VERIFICATION_BADGE_CLASS: Record<string, string> = {
-  listed: "v-listed",
-  information_provided: "v-info",
-  source_verified: "v-source",
-  official_website_found: "v-website",
-  registration_information_available: "v-registration",
+  verified: "v-verified",
+  publicly_listed: "v-listed",
+  "source-backed": "v-source",
+  unverified: "v-unverified",
 };
+
+// Human-readable explanations for the homepage legend.
+export const VERIFICATION_DESCRIPTIONS: Record<string, string> = {
+  verified: "Independently verified with documented evidence. No records qualify yet.",
+  publicly_listed: "A public company with a verifiable stock listing and official website.",
+  "source-backed": "Facts are backed by an official source (e.g. the company's own website).",
+  unverified: "Demo or placeholder data — not yet verified against any source.",
+};
+
+export const VERIFICATION_ORDER = [
+  "verified",
+  "publicly_listed",
+  "source-backed",
+  "unverified",
+];
 
 export const VEHICLE_TYPE_LABELS: Record<string, string> = {
   suv: "SUV",
@@ -39,7 +56,7 @@ export function verificationLabel(status: string): string {
 }
 
 export function verificationBadgeClass(status: string): string {
-  return VERIFICATION_BADGE_CLASS[status] ?? "v-listed";
+  return VERIFICATION_BADGE_CLASS[status] ?? "v-unverified";
 }
 
 export function vehicleTypeLabel(type: string): string {

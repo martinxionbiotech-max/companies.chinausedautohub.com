@@ -70,7 +70,7 @@ function display(value: string | null | undefined): string {
   breadcrumbs={breadcrumbs}
   lastUpdated={company.last_checked}
 >
-  <DemoBanner />
+  {company.verification_status === "unverified" && <DemoBanner />}
 
   <h1>{company.name}</h1>
   <p class="status-line"><VerificationBadge status={company.verification_status} /> <span class="evidence">{display(company.verification_evidence)}</span></p>
@@ -84,6 +84,7 @@ function display(value: string | null | undefined): string {
       <tr><th scope="row">Location</th><td>{location}</td></tr>
       <tr><th scope="row">Province</th><td>{display(company.province)}</td></tr>
       <tr><th scope="row">City</th><td>{display(company.city)}</td></tr>
+      <tr><th scope="row">Established</th><td>{company.established ? company.established : "Not available"}</td></tr>
       <tr><th scope="row">Business Scope</th><td>{display(company.business_scope)}</td></tr>
       <tr>
         <th scope="row">Export Markets</th>
