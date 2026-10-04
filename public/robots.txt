@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://company.chinausedautohub.com/sitemap-index.xml
