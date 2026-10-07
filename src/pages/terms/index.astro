@@ -1,0 +1,56 @@
+---
+import LegalPage from "../../../shared/components/LegalPage.astro";
+import { COMPANIES_SITE_URL } from "../../../shared/config/config";
+
+const sections = [
+  {
+    h: "Service description",
+    p: [
+      "The Companies sub-site is a directory of vehicle manufacturers, exporters, dealers, inspection companies, logistics and shipping companies and related suppliers. It is provided for information and discovery purposes.",
+    ],
+  },
+  {
+    h: "Directory information",
+    p: [
+      "Company records are compiled from public sources and company-provided information, and we record a verification status where available. We do not guarantee that every record is current, complete or accurate.",
+    ],
+  },
+  {
+    h: "No endorsement",
+    p: [
+      "A listing in this directory does not constitute an endorsement, recommendation, certification or partnership. We do not guarantee the quality, reliability or conduct of any listed company, and we are not party to any transaction between you and a listed company.",
+    ],
+  },
+  {
+    h: "Your own diligence",
+    p: [
+      "You are responsible for your own due diligence before engaging any listed company. Verify licences, references and terms directly with the company and the relevant authorities.",
+    ],
+  },
+  {
+    h: "Governing law",
+    p: [
+      "Unless mandatory law in your jurisdiction provides otherwise, these terms and your use of this website are governed by the laws of the People's Republic of China.",
+    ],
+  },
+  {
+    h: "Contact",
+    p: [
+      "For questions about these terms, email {email}.",
+    ],
+  },
+];
+---
+
+<LegalPage
+  siteTitle="China Used Car Companies"
+  siteUrl={COMPANIES_SITE_URL}
+  currentSection="companies"
+  title="Terms of Use — China Used Car Companies"
+  description="Terms of use for the Companies sub-site: a directory of third-party companies with no endorsement and no transaction involvement."
+  canonical="/terms/"
+  h1="Terms of Use"
+  intro="By using this website you agree to these terms. The Companies sub-site is a directory published as part of China Used Auto Hub."
+  sections={sections}
+  lastUpdated="2026-10-07"
+/>

@@ -1,0 +1,56 @@
+---
+import LegalPage from "../../../shared/components/LegalPage.astro";
+import { COMPANIES_SITE_URL } from "../../../shared/config/config";
+
+const sections = [
+  {
+    h: "Third-party directory information",
+    p: [
+      "Company records on this site are compiled from public sources and company-provided information, and are presented for discovery and reference. We do not independently verify every detail of every listing, and we do not guarantee that records are current, complete or accurate.",
+    ],
+  },
+  {
+    h: "Listing is not endorsement",
+    p: [
+      "The presence of a company in this directory does not constitute an endorsement, recommendation, certification or partnership. A listing does not imply that we have vetted the company, guarantee its reliability, or are party to any transaction between you and that company.",
+    ],
+  },
+  {
+    h: "Verification status",
+    p: [
+      "Where a record carries a verification status, that status reflects the evidence we hold for that record, not a certification of the company. Records without sufficient evidence are labelled accordingly.",
+    ],
+  },
+  {
+    h: "Your own due diligence",
+    p: [
+      "Before engaging any listed company, conduct your own due diligence: verify licences, references and terms directly with the company and the relevant authorities. We are not responsible for the conduct of third-party companies or for any transaction you enter into with them.",
+    ],
+  },
+  {
+    h: "Not professional advice",
+    p: [
+      "Nothing on this site is legal, tax, financial, import or other professional advice. For decisions with legal or financial consequences, consult a qualified adviser in your jurisdiction.",
+    ],
+  },
+  {
+    h: "Contact",
+    p: [
+      "If you believe information here is incorrect or out of date, email {email} or message us on WhatsApp: {whatsapp}.",
+    ],
+  },
+];
+---
+
+<LegalPage
+  siteTitle="China Used Car Companies"
+  siteUrl={COMPANIES_SITE_URL}
+  currentSection="companies"
+  title="Disclaimer — China Used Car Companies"
+  description="Directory disclaimer: third-party company information, no endorsement, no certification, and your own due diligence is required."
+  canonical="/disclaimer/"
+  h1="Disclaimer"
+  intro="The company directory on this website is provided for discovery and reference only."
+  sections={sections}
+  lastUpdated="2026-10-07"
+/>
