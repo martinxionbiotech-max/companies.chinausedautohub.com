@@ -131,6 +131,7 @@ function display(value: string | null | undefined): string {
         </td>
       </tr>
       <tr><th scope="row">Vehicle Types</th><td>{vehicleTypes}</td></tr>
+      <tr><th scope="row">Export Presence</th><td>{display(company.export_presence)}</td></tr>
       <tr><th scope="row">Inspection Capability</th><td>{display(company.inspection_capability)}</td></tr>
       <tr><th scope="row">Warehouse</th><td>{display(company.warehouse)}</td></tr>
       <tr><th scope="row">Website</th><td>{company.website ? <a href={company.website} rel="noopener">{company.website}</a> : "Not available"}</td></tr>
@@ -138,6 +139,7 @@ function display(value: string | null | undefined): string {
       <tr><th scope="row">Phone</th><td>{display(company.phone)}</td></tr>
       <tr><th scope="row">WhatsApp</th><td>{display(company.whatsapp)}</td></tr>
       <tr><th scope="row">Verification Status</th><td><VerificationBadge status={company.verification_status} /></td></tr>
+      <tr><th scope="row">Confidence</th><td>{display(company.confidence)}</td></tr>
       <tr><th scope="row">Last Updated</th><td>{display(company.last_checked)}</td></tr>
     </tbody>
   </table>
@@ -145,6 +147,7 @@ function display(value: string | null | undefined): string {
   <p class="source-note">
     Source: {display(company.source)}
     {company.source_url && <> · <a href={company.source_url} rel="noopener">{company.source_url}</a></>}
+    {company.confidence && <> · Confidence: {company.confidence}</>}
     {company.last_checked && <> · Last checked: {company.last_checked}</>}
   </p>
 
@@ -194,13 +197,15 @@ function display(value: string | null | undefined): string {
           <tr>
             <th scope="row">Export information</th>
             <td>
+              {company.export_presence && <p class="export-presence">{company.export_presence}</p>}
               {markets.length ? (
                 <ul class="tag-list">
                   {company.export_markets.map((id) => (
                     <li><a href={MARKET_SITE_URL + "/countries/" + id + "/"}>{countryNames[id] || id}</a></li>
                   ))}
                 </ul>
-              ) : "Not available"}
+              ) : null}
+              {!company.export_presence && !markets.length ? "Not available" : null}
             </td>
           </tr>
           <tr><th scope="row">Market presence</th><td>{markets.length ? markets.join(", ") : "Not available"}</td></tr>
@@ -246,6 +251,7 @@ function display(value: string | null | undefined): string {
   .intel h2 { border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-2); }
   .intel-note { font-size: 13px; color: var(--color-text-soft); }
   .zh { color: var(--color-text-soft); font-size: 0.9em; margin-left: var(--space-2); }
+  .export-presence { margin: 0 0 var(--space-2); }
   .demo-notice { padding: var(--space-5) 0; max-width: 60ch; }
   .demo-notice .demo-title { font-size: 17px; font-weight: 600; color: var(--color-warning); }
 </style>

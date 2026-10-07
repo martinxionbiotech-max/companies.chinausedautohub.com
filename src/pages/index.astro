@@ -22,7 +22,7 @@ const hiddenDemoCount = allCompanies.length - companies.length;
 const brandNames = Object.fromEntries(brandsData.brands.map((b) => [b.brand_id, b.name]));
 const countryNames = Object.fromEntries(countriesData.countries.map((c) => [c.country_id, c.name]));
 const pageUrl = COMPANIES_SITE_URL + "/";
-const LAST_CHECKED = "2026-10-04";
+const LAST_CHECKED = "2026-10-07";
 
 const automakerCount = companies.filter((c) => c.business_type === "automaker").length;
 const exporterCount = companies.filter((c) => c.business_type === "exporter").length;

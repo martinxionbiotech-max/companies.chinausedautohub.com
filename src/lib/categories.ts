@@ -11,6 +11,7 @@ export interface Company {
   export_markets: string[];
   main_brands: string[];
   vehicle_types: string[];
+  export_presence: string | null;
   inspection_capability: string | null;
   warehouse: string | null;
   website: string | null;
@@ -21,6 +22,7 @@ export interface Company {
   verification_evidence: string | null;
   source: string | null;
   source_url: string | null;
+  confidence: string | null;
   last_checked: string | null;
   status: string;
 }

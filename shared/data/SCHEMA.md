@@ -79,17 +79,21 @@
     "export_markets": ["uae","kenya"],
     "main_brands": ["byd","geely"],
     "vehicle_types": ["suv","sedan"],
+    "export_presence": "…narrative export presence, or null…",
     "inspection_capability": null, "warehouse": null,
     "website": null, "email": null, "phone": null, "whatsapp": null,
     "verification_status": "verified|publicly_listed|source-backed|unverified",
     "verification_evidence": "...",
-    "source": "...", "source_url": "...", "last_checked": "2026-10-04",
+    "source": "...", "source_url": "...",
+    "confidence": "high|medium|low|unknown",
+    "last_checked": "2026-10-04",
     "status": "active|inactive"
   }]
 }
 ```
 - verification_status 只能用上面 4 个词（Phase 2 四级）：verified（绿，需真实独立证据）/ publicly_listed（蓝，上市公司）/ source-backed（青，官方来源可查）/ unverified（灰，含全部 demo 与无证据记录）
 - 禁止 Verified/Certified/Trusted/Best 无证据标记；demo/占位记录必须 verification_status=unverified
+- export_presence：出口存在感的叙述性描述（年度出口量、主要出海区域、进入海外时间点），无可靠来源时写 null；confidence 记录级取值 high|medium|low|unknown（官方来源=high，百科/可靠媒体=medium）
 
 ## countries.json（MARKET 维护，种子已存在）
 字段：country_id, name, name_zh, region, drive_side(lhd|rhd), currency, status, source/source_url/source_date/confidence
