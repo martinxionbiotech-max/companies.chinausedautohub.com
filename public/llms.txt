@@ -1,0 +1,24 @@
+# China Used Auto Hub — Companies
+
+> Company directory for the China used-car export ecosystem — profiles of exporters, agents, and related companies, with category browsing. Sub-site of China Used Auto Hub.
+
+## Core Pages
+
+- [Home](https://company.chinausedautohub.com/): Entry point to the company directory.
+- [Companies](https://company.chinausedautohub.com/companies/): Individual company profiles (via /companies/[company]/).
+- [Categories](https://company.chinausedautohub.com/): Browse companies by category (via /[category]/).
+
+## Legal & Policy
+
+- [Terms](https://company.chinausedautohub.com/terms/): Terms of service.
+- [Privacy](https://company.chinausedautohub.com/privacy/): Privacy policy.
+- [Disclaimer](https://company.chinausedautohub.com/disclaimer/): Disclaimer.
+- [Cookies](https://company.chinausedautohub.com/cookies/): Cookie policy.
+
+## Parent site
+
+- [China Used Auto Hub](https://chinausedautohub.com/): Main sourcing and inventory platform.
+
+## Notes
+
+- Unverified company records are excluded from indexing; verification status is shown per profile.
